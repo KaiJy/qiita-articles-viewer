@@ -13,6 +13,23 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    files: ["**/__tests__/**", "**/*.test.{js,jsx,ts,tsx}"],
+    languageOptions: {
+      globals: {
+        // Jest のグローバル関数を認識させる
+        describe: true,
+        it: true,
+        test: true,
+        expect: true,
+        beforeAll: true,
+        afterAll: true,
+        beforeEach: true,
+        afterEach: true,
+        jest: true,
+      },
+    },
+  },
 ]);
 
 export default eslintConfig;

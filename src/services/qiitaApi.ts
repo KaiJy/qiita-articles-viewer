@@ -43,21 +43,6 @@ export const qiitaApi = {
     return response.data;
   },
 
-  // 認証されたユーザーの記事一覧取得
-  // getAuthenticatedUserItems: async (page = 1, perPage = 20): Promise<QiitaApiResponse> => {
-  //   const response = await api.get<QiitaItem[]>('/authenticated_user/items', {
-  //     params: {
-  //       page,
-  //       per_page: perPage,
-  //     },
-  //   });
-  //   return {
-  //     items: response.data,
-  //     total_count: parseInt(response.headers['total-count'] || '0'),
-  //     page,
-  //     per_page: perPage,
-  //   };
-  // },
 };
 
 export default qiitaApi;

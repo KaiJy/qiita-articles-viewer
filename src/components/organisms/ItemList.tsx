@@ -17,6 +17,7 @@ import { LoadingSpinner } from '@/components/molecules/LoadingSpinner';
 import { ApiKeyForm } from '@/components/molecules/ApiKeyForm';
 import { formatRelativeTime } from '@/utils/dateUtils';
 import { QiitaTag } from '@/types/qiita';
+import axios from 'axios';
 
 export const ItemList: React.FC = () => {
   const router = useRouter();
@@ -80,13 +81,54 @@ export const ItemList: React.FC = () => {
     return <LoadingSpinner message="記事を読み込み中..." />;
   }
 
+  // if (error) {
+  //   return (
+  //     <Box sx={{ p: 3 }}>
+  //       <Alert severity="error" sx={{ mb: 2 }}>
+  //         記事の読み込みに失敗しました
+  //       </Alert>
+  //       <Button onClick={() => refetch()} variant="contained">
+  //         再試行
+  //       </Button>
+  //     </Box>
+  //   );
+  // }
   if (error) {
+    let errorMessage = '記事の読み込みに失敗しました';
+    let isRateLimit = false;
+    let resetTime: string | null = null;
+  
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status;
+      const headers = error.response?.headers;
+      const remaining = headers?.['Rate-Remaining'];
+      const reset = headers?.['x-ratelimit-reset'];
+      
+      console.log(headers);
+      console.log('エラーです')
+  
+      // Qiita API 上限に達した場合
+      if (status === 403 && remaining === '0') {
+        isRateLimit = true;
+        resetTime = reset
+          ? new Date(Number(reset) * 1000).toLocaleTimeString()
+          : null;
+        errorMessage = `Qiita APIのリクエスト上限に達しました。${
+          resetTime ? `リセット時刻: ${resetTime}` : ''
+        }`;
+      }
+    }
+  
     return (
       <Box sx={{ p: 3 }}>
-        <Alert severity="error" sx={{ mb: 2 }}>
-          記事の読み込みに失敗しました
+        <Alert severity={isRateLimit ? 'warning' : 'error'} sx={{ mb: 2 }}>
+          {errorMessage}
         </Alert>
-        <Button onClick={() => refetch()} variant="contained">
+        <Button
+          onClick={() => refetch()}
+          variant="contained"
+          disabled={isRateLimit} // ← 上限時はリトライボタンを無効化
+        >
           再試行
         </Button>
       </Box>
