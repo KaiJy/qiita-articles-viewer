@@ -25,13 +25,40 @@ export const ItemList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useSearchQuery();
   const [itemsPerPage, setItemsPerPage] = useItemsPerPage();
   const [inputValue, setInputValue] = useState(searchQuery);
+  const [userName, setUserName] = useState('');
+  const [createdFrom, setCreatedFrom] = useState('');
+  const [createdTo, setCreatedTo] = useState('');
   const [apiKeyFormOpen, setApiKeyFormOpen] = useState(false);
   const { data, isLoading, error, refetch } = useQiitaItems();
 
   const handleSearch = useCallback(() => {
-    setSearchQuery(inputValue);
+    // 検索クエリを構築
+    const queryParts: string[] = [];
+    
+    // キーワード検索
+    if (inputValue.trim()) {
+      queryParts.push(inputValue.trim());
+    }
+    
+    // ユーザー名で絞り込み
+    if (userName.trim()) {
+      queryParts.push(`user:${userName.trim()}`);
+    }
+    
+    // 作成日時（以降）で絞り込み
+    if (createdFrom) {
+      queryParts.push(`created:>=${createdFrom}`);
+    }
+    
+    // 作成日時（以前）で絞り込み
+    if (createdTo) {
+      queryParts.push(`created:<=${createdTo}`);
+    }
+    
+    const query = queryParts.join(' ');
+    setSearchQuery(query);
     setPage(1);
-  }, [inputValue, setSearchQuery, setPage]);
+  }, [inputValue, userName, createdFrom, createdTo, setSearchQuery, setPage]);
 
   const handleRowClick = useCallback((params: GridRowParams) => {
     router.push(`/${params.id}`);
@@ -81,18 +108,6 @@ export const ItemList: React.FC = () => {
     return <LoadingSpinner message="記事を読み込み中..." />;
   }
 
-  // if (error) {
-  //   return (
-  //     <Box sx={{ p: 3 }}>
-  //       <Alert severity="error" sx={{ mb: 2 }}>
-  //         記事の読み込みに失敗しました
-  //       </Alert>
-  //       <Button onClick={() => refetch()} variant="contained">
-  //         再試行
-  //       </Button>
-  //     </Box>
-  //   );
-  // }
   if (error) {
     let errorMessage = '記事の読み込みに失敗しました';
     let isRateLimit = false;
@@ -124,7 +139,7 @@ export const ItemList: React.FC = () => {
         <Button
           onClick={() => refetch()}
           variant="contained"
-          disabled={isRateLimit} // ← 上限時はリトライボタンを無効化
+          disabled={isRateLimit}
         >
           再試行
         </Button>
@@ -139,13 +154,16 @@ export const ItemList: React.FC = () => {
       </Typography>
 
       <Paper sx={{ p: 2, mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 2 }}>
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              検索フォーム
-            </Typography>
+        <Typography variant="subtitle2" sx={{ mb: 2 }}>
+          検索フォーム
+        </Typography>
+        
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* キーワード検索 */}
+          <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 2 }}>
             <TextField
               fullWidth
+              label="キーワード"
               placeholder="検索キーワードを入力"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
@@ -158,34 +176,84 @@ export const ItemList: React.FC = () => {
             />
           </Box>
 
-          <IconButton
-            onClick={handleSearch}
-            color="primary"
-            sx={{
-              border: '1px solid',
-              borderColor: 'primary.main',
-              borderRadius: 1,
-            }}
-          >
-            <SearchIcon />
-          </IconButton>
+          {/* 詳細検索条件 */}
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <TextField
+              label="ユーザー名"
+              placeholder="例: qiita"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearch();
+                }
+              }}
+              size="small"
+              sx={{ minWidth: 200 }}
+            />
+            
+            <TextField
+              label="作成日（以降）"
+              type="date"
+              value={createdFrom}
+              onChange={(e) => setCreatedFrom(e.target.value)}
+              size="small"
+              InputLabelProps={{ shrink: true }}
+              sx={{ minWidth: 180 }}
+            />
+            
+            <TextField
+              label="作成日（以前）"
+              type="date"
+              value={createdTo}
+              onChange={(e) => setCreatedTo(e.target.value)}
+              size="small"
+              InputLabelProps={{ shrink: true }}
+              sx={{ minWidth: 180 }}
+            />
 
-          <IconButton
-            onClick={() => setApiKeyFormOpen(true)}
-            color="default"
-            sx={{
-              border: '1px solid',
-              borderColor: 'grey.400',
-              borderRadius: 1,
-            }}
-          >
-            <SettingsIcon />
-          </IconButton>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              <Button
+                variant="contained"
+                onClick={handleSearch}
+                startIcon={<SearchIcon />}
+                size="medium"
+              >
+                検索
+              </Button>
+              
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  setInputValue('');
+                  setUserName('');
+                  setCreatedFrom('');
+                  setCreatedTo('');
+                  setSearchQuery('');
+                  setPage(1);
+                }}
+                size="medium"
+              >
+                クリア
+              </Button>
+              
+              <IconButton
+                onClick={() => setApiKeyFormOpen(true)}
+                color="default"
+                sx={{
+                  border: '1px solid',
+                  borderColor: 'grey.400',
+                  borderRadius: 1,
+                }}
+              >
+                <SettingsIcon />
+              </IconButton>
+            </Box>
+          </Box>
         </Box>
-
       </Paper>
 
-      <Paper sx={{ height: 'calc(100vh - 300px)', width: '100%' }}>
+      <Paper sx={{ height: 'calc(100vh - 400px)', width: '100%' }}>
         <DataGrid
           rows={data?.items || []}
           columns={columns}
