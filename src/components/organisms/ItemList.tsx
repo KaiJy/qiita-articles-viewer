@@ -103,9 +103,6 @@ export const ItemList: React.FC = () => {
       const headers = error.response?.headers;
       const remaining = headers?.['Rate-Remaining'];
       const reset = headers?.['x-ratelimit-reset'];
-      
-      console.log(headers);
-      console.log('エラーです')
   
       // Qiita API 上限に達した場合
       if (status === 403 && remaining === '0') {
