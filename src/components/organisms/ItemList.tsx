@@ -100,7 +100,11 @@ export const ItemList: React.FC = () => {
       headerName: '投稿日時',
       flex: 1,
       minWidth: 150,
-      valueGetter: (value) => formatRelativeTime(value),
+      valueFormatter: (value) => formatRelativeTime(value),
+      sortComparator: (v1, v2) => {
+        // 日付文字列を直接比較（新しい順がデフォルト）
+        return new Date(v1).getTime() - new Date(v2).getTime();
+      },
     },
   ];
 
@@ -253,7 +257,7 @@ export const ItemList: React.FC = () => {
         </Box>
       </Paper>
 
-      <Paper sx={{ height: 'calc(100vh - 400px)', width: '100%' }}>
+      <Paper sx={{ height: 'calc(100vh - 340px)', width: '100%' }}>
         <DataGrid
           rows={data?.items || []}
           columns={columns}
