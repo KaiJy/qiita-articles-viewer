@@ -66,13 +66,18 @@ export const ApiKeyForm: React.FC<ApiKeyFormProps> = ({ open, onClose }) => {
           />
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} intent="secondary">
-          キャンセル
+      <DialogActions sx={{ justifyContent: 'space-between' }}>
+        <Button onClick={handleClear} intent="error">
+          APIキーをクリア
         </Button>
-        <Button onClick={handleSave} intent="primary">
-          適用
-        </Button>
+        <Box>
+          <Button onClick={onClose} intent="secondary" sx={{ mr: 1 }}>
+            キャンセル
+          </Button>
+          <Button onClick={handleSave} intent="primary">
+            適用
+          </Button>
+        </Box>
       </DialogActions>
     </Dialog>
   );

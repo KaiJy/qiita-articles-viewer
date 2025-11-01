@@ -3,10 +3,14 @@ import { qiitaApi } from '@/services/qiitaApi';
 import { useAppContext } from '@/stores/AppContext';
 
 export const useQiitaItems = () => {
-  const { currentPage: page, itemsPerPage: perPage, isAuthenticated, searchQuery } = useAppContext();
+  const {
+    currentPage: page,
+    itemsPerPage: perPage,
+    searchQuery,
+  } = useAppContext();
 
   return useQuery({
-    queryKey: ['qiita-items', page, perPage, isAuthenticated, searchQuery],
+    queryKey: ['qiita-items', page, perPage, searchQuery],
     queryFn: () => {
       // if (isAuthenticated) {
       //   return qiitaApi.getAuthenticatedUserItems(page, perPage);

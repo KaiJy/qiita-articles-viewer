@@ -11,7 +11,7 @@ const meta = {
   argTypes: {
     intent: {
       control: 'select',
-      options: ['primary', 'secondary', 'danger'],
+      options: ['primary', 'secondary', 'error'],
       description: 'ボタンの見た目や用途を指定',
     },
     disabled: {
@@ -39,5 +39,12 @@ export const Secondary: Story = {
   args: {
     intent: 'secondary',
     children: 'Secondary Button',
+  },
+};
+
+export const Error: Story = {
+  args: {
+    intent: 'error',
+    children: 'Error Button',
   },
 };

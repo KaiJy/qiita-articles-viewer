@@ -1,8 +1,11 @@
 import React from 'react';
-import { Button as MuiButton, ButtonProps as MuiButtonProps } from '@mui/material';
+import {
+  Button as MuiButton,
+  ButtonProps as MuiButtonProps,
+} from '@mui/material';
 import { useTheme, SxProps, Theme } from '@mui/material/styles';
 
-type Intent = 'primary' | 'secondary';
+type Intent = 'primary' | 'secondary' | 'error';
 
 interface BaseButtonProps extends Omit<MuiButtonProps, 'color' | 'variant'> {
   intent?: Intent;
@@ -15,6 +18,7 @@ type ButtonProps = BaseButtonProps & Record<string, any>;
 export const Button: React.FC<ButtonProps> = ({
   children,
   intent = 'primary',
+  sx: propsSx,
   ...props
 }) => {
   const theme = useTheme();
@@ -45,16 +49,32 @@ export const Button: React.FC<ButtonProps> = ({
         },
       },
     },
+    error: {
+      muiVariant: 'contained',
+      sx: {
+        backgroundColor: theme.palette.error.main,
+        color: theme.palette.common.white,
+        '&:hover': {
+          backgroundColor: theme.palette.error.dark,
+        },
+      },
+    },
   };
 
   const { muiVariant, sx } = styleMap[intent];
 
-  const mergedSx: SxProps<Theme> = {
+  // intentベースのスタイルと共通スタイルをマージ
+  const baseSx: SxProps<Theme> = {
     ...sx,
     borderRadius: 4,
     textTransform: 'none',
-    fontFamily: theme.typography.fontFamily,
+    ...(theme.typography.fontFamily && {
+      fontFamily: theme.typography.fontFamily,
+    }),
   };
+
+  // propsから渡されたsxとマージ（propsのsxが優先される）
+  const mergedSx = (propsSx ? [baseSx, propsSx] : baseSx) as SxProps<Theme>;
 
   return (
     <MuiButton variant={muiVariant} sx={mergedSx} {...props}>

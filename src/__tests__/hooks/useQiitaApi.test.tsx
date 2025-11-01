@@ -18,10 +18,15 @@ jest.mock('@/stores/AppContext', () => ({
 }));
 
 const mockQiitaApi = qiitaApi as jest.Mocked<typeof qiitaApi>;
-const mockUseAppContext = useAppContext as jest.MockedFunction<typeof useAppContext>;
+const mockUseAppContext = useAppContext as jest.MockedFunction<
+  typeof useAppContext
+>;
 
 // テスト用のQiitaItemデータを作成するヘルパー
-const createMockQiitaItem = (id: string, overrides?: Partial<QiitaItem>): QiitaItem => ({
+const createMockQiitaItem = (
+  id: string,
+  overrides?: Partial<QiitaItem>
+): QiitaItem => ({
   id,
   title: `Test Article ${id}`,
   url: `https://qiita.com/test/${id}`,
@@ -115,7 +120,9 @@ describe('useQiitaApi', () => {
 
       const { result } = renderHook(() => useQiitaItems(), {
         wrapper: ({ children }) => (
-          <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
         ),
       });
 
@@ -148,7 +155,9 @@ describe('useQiitaApi', () => {
 
       const { result } = renderHook(() => useQiitaItems(), {
         wrapper: ({ children }) => (
-          <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
         ),
       });
 
@@ -172,7 +181,9 @@ describe('useQiitaApi', () => {
 
       const { result } = renderHook(() => useQiitaItems(), {
         wrapper: ({ children }) => (
-          <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
         ),
       });
 
@@ -191,7 +202,9 @@ describe('useQiitaApi', () => {
 
       const { result } = renderHook(() => useQiitaItems(), {
         wrapper: ({ children }) => (
-          <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
         ),
       });
 
@@ -220,14 +233,16 @@ describe('useQiitaApi', () => {
 
       const { result } = renderHook(() => useQiitaItems(), {
         wrapper: ({ children }) => (
-          <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
         ),
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
       // queryKeyが正しいことを確認（内部的に使用される）
-      const queryKey = ['qiita-items', 2, 30, true, 'typescript'];
+      const queryKey = ['qiita-items', 2, 30, 'typescript'];
       const cachedData = queryClient.getQueryData(queryKey);
       expect(cachedData).toEqual(mockResponse);
     });
@@ -252,7 +267,9 @@ describe('useQiitaApi', () => {
 
       const { result, rerender } = renderHook(() => useQiitaItems(), {
         wrapper: ({ children }) => (
-          <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
         ),
       });
 
@@ -283,7 +300,9 @@ describe('useQiitaApi', () => {
 
       const { result } = renderHook(() => useQiitaItem('test-item-123'), {
         wrapper: ({ children }) => (
-          <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
         ),
       });
 
@@ -301,7 +320,9 @@ describe('useQiitaApi', () => {
 
       const { result } = renderHook(() => useQiitaItem(''), {
         wrapper: ({ children }) => (
-          <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
         ),
       });
 
@@ -319,7 +340,9 @@ describe('useQiitaApi', () => {
 
       const { result } = renderHook(() => useQiitaItem('non-existent-item'), {
         wrapper: ({ children }) => (
-          <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
         ),
       });
 
@@ -337,7 +360,9 @@ describe('useQiitaApi', () => {
 
       const { result } = renderHook(() => useQiitaItem('key-test-item'), {
         wrapper: ({ children }) => (
-          <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
         ),
       });
 
@@ -360,7 +385,9 @@ describe('useQiitaApi', () => {
         ({ itemId }: { itemId: string }) => useQiitaItem(itemId),
         {
           wrapper: ({ children }) => (
-            <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+            <QueryClientProvider client={queryClient}>
+              {children}
+            </QueryClientProvider>
           ),
           initialProps: { itemId: 'item-1' },
         }
@@ -380,7 +407,7 @@ describe('useQiitaApi', () => {
       });
 
       expect(mockQiitaApi.getItem).toHaveBeenLastCalledWith('item-2');
-      
+
       // データが更新されるのを待つ
       await waitFor(() => expect(result.current.data?.id).toBe('item-2'));
     });
@@ -395,7 +422,9 @@ describe('useQiitaApi', () => {
         ({ itemId }: { itemId: string }) => useQiitaItem(itemId),
         {
           wrapper: ({ children }) => (
-            <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+            <QueryClientProvider client={queryClient}>
+              {children}
+            </QueryClientProvider>
           ),
           initialProps: { itemId: '' },
         }
@@ -416,4 +445,3 @@ describe('useQiitaApi', () => {
     });
   });
 });
-

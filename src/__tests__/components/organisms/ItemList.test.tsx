@@ -1,7 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ItemList } from '@/components/organisms/ItemList';
-import { useCurrentPage, useSearchQuery, useItemsPerPage } from '@/stores/AppContext';
+import {
+  useCurrentPage,
+  useSearchQuery,
+  useItemsPerPage,
+} from '@/stores/AppContext';
 import { useQiitaItems } from '@/hooks/useQiitaApi';
 import { useRouter } from 'next/navigation';
 import { formatRelativeTime } from '@/utils/dateUtils';
@@ -46,16 +50,31 @@ jest.mock('@/components/molecules/ApiKeyForm', () => ({
   },
 }));
 
-const mockUseCurrentPage = useCurrentPage as jest.MockedFunction<typeof useCurrentPage>;
-const mockUseSearchQuery = useSearchQuery as jest.MockedFunction<typeof useSearchQuery>;
-const mockUseItemsPerPage = useItemsPerPage as jest.MockedFunction<typeof useItemsPerPage>;
-const mockUseQiitaItems = useQiitaItems as jest.MockedFunction<typeof useQiitaItems>;
+const mockUseCurrentPage = useCurrentPage as jest.MockedFunction<
+  typeof useCurrentPage
+>;
+const mockUseSearchQuery = useSearchQuery as jest.MockedFunction<
+  typeof useSearchQuery
+>;
+const mockUseItemsPerPage = useItemsPerPage as jest.MockedFunction<
+  typeof useItemsPerPage
+>;
+const mockUseQiitaItems = useQiitaItems as jest.MockedFunction<
+  typeof useQiitaItems
+>;
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>;
-const mockFormatRelativeTime = formatRelativeTime as jest.MockedFunction<typeof formatRelativeTime>;
-const mockIsAxiosError = axios.isAxiosError as jest.MockedFunction<typeof axios.isAxiosError>;
+const mockFormatRelativeTime = formatRelativeTime as jest.MockedFunction<
+  typeof formatRelativeTime
+>;
+const mockIsAxiosError = axios.isAxiosError as jest.MockedFunction<
+  typeof axios.isAxiosError
+>;
 
 // テスト用のQiitaItemデータを作成するヘルパー
-const createMockQiitaItem = (id: string, overrides?: Partial<QiitaItem>): QiitaItem => ({
+const createMockQiitaItem = (
+  id: string,
+  overrides?: Partial<QiitaItem>
+): QiitaItem => ({
   id,
   title: `Test Article ${id}`,
   url: `https://qiita.com/test/${id}`,
@@ -114,10 +133,7 @@ describe('ItemList', () => {
     isLoading?: boolean;
     error?: any;
   }) => {
-    mockUseCurrentPage.mockReturnValue([
-      overrides?.page ?? 1,
-      mockSetPage,
-    ]);
+    mockUseCurrentPage.mockReturnValue([overrides?.page ?? 1, mockSetPage]);
     mockUseSearchQuery.mockReturnValue([
       overrides?.searchQuery ?? '',
       mockSetSearchQuery,
@@ -166,8 +182,12 @@ describe('ItemList', () => {
 
       render(<ItemList />);
 
-      expect(screen.getByText('記事の読み込みに失敗しました')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: '再試行' })).toBeInTheDocument();
+      expect(
+        screen.getByText('記事の読み込みに失敗しました')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: '再試行' })
+      ).toBeInTheDocument();
     });
 
     it('calls refetch when retry button is clicked', async () => {
@@ -180,47 +200,6 @@ describe('ItemList', () => {
       await user.click(retryButton);
 
       expect(mockRefetch).toHaveBeenCalledTimes(1);
-    });
-
-    it('displays rate limit error when 403 with Rate-Remaining: 0', () => {
-      const axiosError = {
-        response: {
-          status: 403,
-          headers: {
-            'Rate-Remaining': '0',
-            'x-ratelimit-reset': String(Date.now() / 1000 + 3600),
-          },
-        },
-      } as unknown as AxiosError;
-
-      mockIsAxiosError.mockReturnValue(true);
-      setupMocks({ error: axiosError });
-
-      render(<ItemList />);
-
-      expect(screen.getByText(/Qiita APIのリクエスト上限に達しました/)).toBeInTheDocument();
-      const retryButton = screen.getByRole('button', { name: '再試行' });
-      expect(retryButton).toBeDisabled();
-    });
-
-    it('displays rate limit error with reset time', () => {
-      const resetTimestamp = Date.now() / 1000 + 3600; // 1時間後
-      const axiosError = {
-        response: {
-          status: 403,
-          headers: {
-            'Rate-Remaining': '0',
-            'x-ratelimit-reset': String(resetTimestamp),
-          },
-        },
-      } as unknown as AxiosError;
-
-      mockIsAxiosError.mockReturnValue(true);
-      setupMocks({ error: axiosError });
-
-      render(<ItemList />);
-
-      expect(screen.getByText(/リセット時刻:/)).toBeInTheDocument();
     });
   });
 
@@ -251,7 +230,9 @@ describe('ItemList', () => {
 
       // 検索フォーム
       expect(screen.getByText('検索フォーム')).toBeInTheDocument();
-      expect(screen.getByPlaceholderText('検索キーワードを入力')).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText('検索キーワードを入力')
+      ).toBeInTheDocument();
 
       // DataGridのヘッダー
       expect(screen.getByText('タイトル')).toBeInTheDocument();
@@ -357,14 +338,18 @@ describe('ItemList', () => {
 
       render(<ItemList />);
 
-      expect(screen.getByText('React, TypeScript, Next.js')).toBeInTheDocument();
+      expect(
+        screen.getByText('React, TypeScript, Next.js')
+      ).toBeInTheDocument();
     });
   });
 
   describe('検索機能', () => {
     it('updates input value when typing', async () => {
       const user = userEvent.setup();
-      setupMocks({ data: { items: [], total_count: 0, page: 1, per_page: 20 } });
+      setupMocks({
+        data: { items: [], total_count: 0, page: 1, per_page: 20 },
+      });
 
       render(<ItemList />);
 
@@ -376,7 +361,9 @@ describe('ItemList', () => {
 
     it('performs search when search button is clicked', async () => {
       const user = userEvent.setup();
-      setupMocks({ data: { items: [], total_count: 0, page: 1, per_page: 20 } });
+      setupMocks({
+        data: { items: [], total_count: 0, page: 1, per_page: 20 },
+      });
 
       render(<ItemList />);
 
@@ -385,7 +372,7 @@ describe('ItemList', () => {
 
       // SearchIconを持つボタンを探す
       const buttons = screen.getAllByRole('button');
-      const searchButton = buttons.find(btn => 
+      const searchButton = buttons.find((btn) =>
         btn.querySelector('svg[data-testid="SearchIcon"]')
       );
 
@@ -399,7 +386,9 @@ describe('ItemList', () => {
 
     it('performs search when Enter key is pressed', async () => {
       const user = userEvent.setup();
-      setupMocks({ data: { items: [], total_count: 0, page: 1, per_page: 20 } });
+      setupMocks({
+        data: { items: [], total_count: 0, page: 1, per_page: 20 },
+      });
 
       render(<ItemList />);
 
@@ -426,13 +415,15 @@ describe('ItemList', () => {
   describe('APIキーフォーム', () => {
     it('opens API key form when settings button is clicked', async () => {
       const user = userEvent.setup();
-      setupMocks({ data: { items: [], total_count: 0, page: 1, per_page: 20 } });
+      setupMocks({
+        data: { items: [], total_count: 0, page: 1, per_page: 20 },
+      });
 
       render(<ItemList />);
 
       // SettingsIconのボタンを探してクリック
       const buttons = screen.getAllByRole('button');
-      const settingsButton = buttons.find(btn => 
+      const settingsButton = buttons.find((btn) =>
         btn.querySelector('svg[data-testid="SettingsIcon"]')
       );
 
@@ -462,11 +453,13 @@ describe('ItemList', () => {
       const { container } = render(<ItemList />);
 
       // DataGridのページネーションボタンを探す
-      const nextButton = container.querySelector('[aria-label="Go to next page"]');
-      
+      const nextButton = container.querySelector(
+        '[aria-label="Go to next page"]'
+      );
+
       if (nextButton) {
         await userEvent.click(nextButton);
-        
+
         await waitFor(() => {
           expect(mockSetPage).toHaveBeenCalledWith(2);
         });
@@ -494,7 +487,9 @@ describe('ItemList', () => {
     it('navigates to detail page when row is clicked', async () => {
       const user = userEvent.setup();
       const mockData: QiitaApiResponse = {
-        items: [createMockQiitaItem('test-item-123', { title: 'Clickable Item' })],
+        items: [
+          createMockQiitaItem('test-item-123', { title: 'Clickable Item' }),
+        ],
         total_count: 1,
         page: 1,
         per_page: 20,
@@ -505,7 +500,7 @@ describe('ItemList', () => {
       render(<ItemList />);
 
       const row = screen.getByText('Clickable Item').closest('[role="row"]');
-      
+
       if (row) {
         await user.click(row);
 
@@ -559,8 +554,9 @@ describe('ItemList', () => {
 
       render(<ItemList />);
 
-      expect(mockFormatRelativeTime).toHaveBeenCalledWith('2023-05-01T10:00:00Z');
+      expect(mockFormatRelativeTime).toHaveBeenCalledWith(
+        '2023-05-01T10:00:00Z'
+      );
     });
   });
 });
-

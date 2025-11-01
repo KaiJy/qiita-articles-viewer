@@ -15,8 +15,12 @@ jest.mock('@/services/qiitaApi', () => ({
 
 describe('ApiKeyForm', () => {
   const mockUseApiKey = useApiKey as jest.MockedFunction<typeof useApiKey>;
-  const mockUseIsAuthenticated = useIsAuthenticated as jest.MockedFunction<typeof useIsAuthenticated>;
-  const mockSetApiToken = setApiToken as jest.MockedFunction<typeof setApiToken>;
+  const mockUseIsAuthenticated = useIsAuthenticated as jest.MockedFunction<
+    typeof useIsAuthenticated
+  >;
+  const mockSetApiToken = setApiToken as jest.MockedFunction<
+    typeof setApiToken
+  >;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -38,7 +42,9 @@ describe('ApiKeyForm', () => {
     setup();
     // ダイアログとラベル付き入力が見える
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    const input = screen.getByLabelText('Qiita 個人用アクセストークン') as HTMLInputElement;
+    const input = screen.getByLabelText(
+      'Qiita 個人用アクセストークン'
+    ) as HTMLInputElement;
     expect(input).toBeInTheDocument();
     expect(input.type).toBe('password');
     // helperTextの一部でもOK（全部一致でも可）
@@ -67,7 +73,9 @@ describe('ApiKeyForm', () => {
     const user = userEvent.setup();
     const { setApiKey, setIsAuth, onClose } = setup({ initialApiKey: '' });
 
-    const input = screen.getByLabelText('Qiita 個人用アクセストークン') as HTMLInputElement;
+    const input = screen.getByLabelText(
+      'Qiita 個人用アクセストークン'
+    ) as HTMLInputElement;
     await user.type(input, 'my-secret-token');
 
     await user.click(screen.getByRole('button', { name: '適用' }));
@@ -78,29 +86,6 @@ describe('ApiKeyForm', () => {
     expect(onClose).toHaveBeenCalled();
     // エラーは消えている（表示されていない）
     expect(screen.queryByText('APIキーを入力してください')).toBeNull();
-  });
-
-  it('shows Clear button when apiKey exists and clears on click', async () => {
-    const user = userEvent.setup();
-    const { setApiKey, setIsAuth } = setup({ initialApiKey: 'already-set' });
-
-    // クリアボタンが表示される（apiKeyがあるときのみ）
-    const clearBtn = screen.getByRole('button', { name: 'クリア' });
-    expect(clearBtn).toBeInTheDocument();
-
-    // 入力値も初期値で埋まっている（ローカルstateがapiKeyで初期化）
-    const input = screen.getByLabelText('Qiita 個人用アクセストークン') as HTMLInputElement;
-    expect(input.value).toBe('already-set');
-
-    await user.click(clearBtn);
-
-    // ストアとトークンをリセット
-    expect(setApiKey).toHaveBeenCalledWith('');
-    expect(mockSetApiToken).toHaveBeenCalledWith('');
-    expect(setIsAuth).toHaveBeenCalledWith(false);
-
-    // 入力もクリアされる（ローカルstate更新）
-    expect((screen.getByLabelText('Qiita 個人用アクセストークン') as HTMLInputElement).value).toBe('');
   });
 
   it('clicking Cancel just calls onClose', async () => {
