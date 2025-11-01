@@ -4,10 +4,13 @@ import { useTheme, SxProps, Theme } from '@mui/material/styles';
 
 type Intent = 'primary' | 'secondary';
 
-interface ButtonProps extends Omit<MuiButtonProps, 'color' | 'variant'> {
+interface BaseButtonProps extends Omit<MuiButtonProps, 'color' | 'variant'> {
   intent?: Intent;
   children: React.ReactNode;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ButtonProps = BaseButtonProps & Record<string, any>;
 
 export const Button: React.FC<ButtonProps> = ({
   children,

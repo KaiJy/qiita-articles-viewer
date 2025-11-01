@@ -4,7 +4,6 @@ import React, { useCallback } from 'react';
 import {
   Box,
   Paper,
-  Button,
   Alert,
   Typography,
   Divider,
@@ -12,6 +11,7 @@ import {
 import { ArrowBack } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { useQiitaItem } from '@/hooks/useQiitaApi';
+import { Button } from '@/components/atoms/Button';
 import { LoadingSpinner } from '@/components/molecules/LoadingSpinner';
 import { formatDate } from '@/utils/dateUtils';
 
@@ -34,10 +34,10 @@ export const ItemDetail: React.FC<ItemDetailProps> = ({ itemId }) => {
   if (error || !item) {
     return (
       <Box sx={{ p: 3 }}>
-        <Alert severity="error">
+        <Alert severity="error" sx={{ mb: 2 }}>
           記事の詳細を読み込めませんでした
         </Alert>
-        <Button onClick={handleBack} sx={{ mt: 2 }}>
+        <Button onClick={handleBack} intent="secondary">
           戻る
         </Button>
       </Box>
@@ -54,7 +54,7 @@ export const ItemDetail: React.FC<ItemDetailProps> = ({ itemId }) => {
         <Button
           startIcon={<ArrowBack />}
           onClick={handleBack}
-          variant="outlined"
+          intent="secondary"
           size="small"
         >
           戻る
@@ -161,7 +161,8 @@ export const ItemDetail: React.FC<ItemDetailProps> = ({ itemId }) => {
 
         <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Button
-            variant="contained"
+            intent="primary"
+            component="a"
             href={item.url}
             target="_blank"
             rel="noopener noreferrer"

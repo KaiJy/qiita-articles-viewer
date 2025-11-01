@@ -114,40 +114,54 @@ export const ItemList: React.FC = () => {
 
   if (error) {
     let errorMessage = '記事の読み込みに失敗しました';
-    let isRateLimit = false;
-    let resetTime: string | null = null;
-  
+    let statusCode: number | undefined;
+
     if (axios.isAxiosError(error)) {
-      const status = error.response?.status;
-      const headers = error.response?.headers;
-      const remaining = headers?.['Rate-Remaining'];
-      const reset = headers?.['x-ratelimit-reset'];
-  
-      // Qiita API 上限に達した場合
-      if (status === 403 && remaining === '0') {
-        isRateLimit = true;
-        resetTime = reset
-          ? new Date(Number(reset) * 1000).toLocaleTimeString()
-          : null;
-        errorMessage = `Qiita APIのリクエスト上限に達しました。${
-          resetTime ? `リセット時刻: ${resetTime}` : ''
-        }`;
-      }
+      statusCode = error.response?.status;
     }
-  
+
     return (
-      <Box sx={{ p: 3 }}>
-        <Alert severity={isRateLimit ? 'warning' : 'error'} sx={{ mb: 2 }}>
-          {errorMessage}
-        </Alert>
-        <Button
-          onClick={() => refetch()}
-          intent="primary"
-          disabled={isRateLimit}
-        >
-          再試行
-        </Button>
-      </Box>
+      <>
+        <Box sx={{ p: 3 }}>
+          <Alert severity="error" sx={{ mb: 2 }}>
+            <Box>
+              <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1 }}>
+                {errorMessage}
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 0.5 }}>
+                考えられる原因：
+              </Typography>
+              <Typography variant="body2" component="div">
+                • APIキーが間違っている、または設定されていない可能性があります
+              </Typography>
+              <Typography variant="body2" component="div">
+                • Qiita APIのリクエスト上限に達した可能性があります
+              </Typography>
+              {statusCode && (
+                <Typography variant="caption" sx={{ mt: 1, display: 'block', color: 'text.secondary' }}>
+                  (ステータスコード: {statusCode})
+                </Typography>
+              )}
+            </Box>
+          </Alert>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button
+              onClick={() => refetch()}
+              intent="primary"
+            >
+              再試行
+            </Button>
+            <Button
+              onClick={() => setApiKeyFormOpen(true)}
+              intent="secondary"
+              startIcon={<SettingsIcon />}
+            >
+              APIキー設定
+            </Button>
+          </Box>
+        </Box>
+        <ApiKeyForm open={apiKeyFormOpen} onClose={() => setApiKeyFormOpen(false)} />
+      </>
     );
   }
 
