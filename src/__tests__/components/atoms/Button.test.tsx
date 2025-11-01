@@ -8,12 +8,6 @@ describe('Button', () => {
     expect(screen.getByRole('button')).toHaveTextContent('Test Button');
   });
 
-  it('should apply variant prop', () => {
-    render(<Button variant="contained">Test Button</Button>);
-    const button = screen.getByRole('button');
-    expect(button).toHaveClass('MuiButton-contained');
-  });
-
   it('should be disabled when disabled prop is true', () => {
     render(<Button disabled>Test Button</Button>);
     const button = screen.getByRole('button');

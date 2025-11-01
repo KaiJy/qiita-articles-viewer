@@ -8,7 +8,8 @@ export const theme = createTheme({
       dark: '#3a8a00',
     },
     secondary: {
-      main: '#f5f5f5',
+      // main: '#f5f5f5',
+      main: '#ffffff',
       light: '#ffffff',
       dark: '#e0e0e0',
     },
@@ -49,7 +50,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: 'none',
-          borderRadius: 8,
+          borderRadius: 4,
         },
       },
     },

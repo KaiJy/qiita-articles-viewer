@@ -2,8 +2,6 @@ import React, { useCallback, useState } from 'react';
 import {
   Box,
   Paper,
-  TextField,
-  Button,
   IconButton,
   Alert,
   Typography,
@@ -13,6 +11,8 @@ import { Search as SearchIcon, Settings as SettingsIcon } from '@mui/icons-mater
 import { useRouter } from 'next/navigation';
 import { useCurrentPage, useSearchQuery, useItemsPerPage } from '@/stores/AppContext';
 import { useQiitaItems } from '@/hooks/useQiitaApi';
+import { Button } from '@/components/atoms/Button';
+import { TextField } from '@/components/atoms/TextField';
 import { LoadingSpinner } from '@/components/molecules/LoadingSpinner';
 import { ApiKeyForm } from '@/components/molecules/ApiKeyForm';
 import { formatRelativeTime } from '@/utils/dateUtils';
@@ -142,7 +142,7 @@ export const ItemList: React.FC = () => {
         </Alert>
         <Button
           onClick={() => refetch()}
-          variant="contained"
+          intent="primary"
           disabled={isRateLimit}
         >
           再試行
@@ -218,7 +218,7 @@ export const ItemList: React.FC = () => {
 
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
               <Button
-                variant="contained"
+                intent="primary"
                 onClick={handleSearch}
                 startIcon={<SearchIcon />}
                 size="medium"
@@ -227,7 +227,7 @@ export const ItemList: React.FC = () => {
               </Button>
               
               <Button
-                variant="outlined"
+                intent="secondary"
                 onClick={() => {
                   setInputValue('');
                   setUserName('');
